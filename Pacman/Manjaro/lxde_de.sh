@@ -6,8 +6,8 @@ echo "Updating the system "
 echo " "
 echo " "
 pacman -Suuyy --noconfirm
-pacman -S lxde sudo --noconfirm 
- pacman -S tigervnc --noconfirm
+pacman -S lxde sudo wget --noconfirm 
+pacman -S tigervnc wget tar sed --noconfirm
 
 wget https://raw.githubusercontent.com/Techriz/AndronixOrigin/master/Pacman/Manjaro/LXDE/xstartup   -P ~/.vnc/
 wget https://raw.githubusercontent.com/Techriz/AndronixOrigin/master/Pacman/vncserver-start -P /usr/local/bin/
@@ -40,4 +40,4 @@ echo " "
 
 echo "export DISPLAY=":1"" >> /etc/profile
 source /etc/profile
-vncserver-start
+wget https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/Pacman/tigervnc-fix.sh -O ~/tigervnc-fix.sh && bash ~/tigervnc-fix.sh

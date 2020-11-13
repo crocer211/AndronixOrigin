@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
+pkg install wget -y 
 folder=ubuntu20-fs
 dlink="https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/APT"
 dlink2="https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/WM/APT"
@@ -104,11 +105,11 @@ rm $tarball
 
 wget --tries=20 $dlink2/openbox.sh -O $folder/openbox.sh
 clear
-echo "Setting up the installation of LXDE VNC"
-echo "namesever 1.1.1.1" > $folder/etc/resolv.conf
+echo "Setting up the installation of Ubuntu20 Openbox"
+echo "nameserver 1.1.1.1" > $folder/etc/resolv.conf
 echo "APT::Acquire::Retries \"3\";" > $folder/etc/apt/apt.conf.d/80-retries #Setting APT retry count
 echo "#!/bin/bash
-apt update -y && apt install wget sudo -y
+apt update -y && apt install wget nano sudo -y
 clear
 if [ ! -f /root/openbox.sh ]; then
     wget --tries=20 $dlink2/openbox.sh -O /root/openbox.sh

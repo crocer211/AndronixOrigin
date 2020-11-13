@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
+pkg install wget -y 
 folder=debian-fs
 dlink="https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/APT"
 dlink2="https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/WM/APT"
@@ -32,7 +33,7 @@ if [ "$first" != 1 ];then
 	mkdir -p "$folder"
 	cd "$folder"
 	echo "Decompressing Rootfs, please be patient."
-	proot --link2symlink tar -xJf ${cur}/${tarball}||:
+	proot --link2symlink tar -xf ${cur}/${tarball}||:
 	cd "$cur"
 fi
 mkdir -p debian-binds

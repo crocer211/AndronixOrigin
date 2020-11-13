@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
+pkg install wget -y 
 folder=ubuntu-fs
 dlink="https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/APT"
 if [ -d "$folder" ]; then
@@ -82,7 +83,7 @@ rm $tarball
 
 #DE installation addition
 
-wget --tries=20 $dlinkT/XFCE4/lxqt_de.sh -O $folder/root/lxqt_de.sh
+wget --tries=20 $dlink/LXQT/lxqt_de.sh -O $folder/root/lxqt_de.sh
 clear
 echo "Setting up the installation of LXQT VNC"
 
@@ -91,7 +92,7 @@ echo "#!/bin/bash
 apt update -y && apt install sudo wget -y
 clear
 if [ ! -f /root/lxqt_de.sh ]; then
-    wget --tries=20 $dlinkT/LXQT/lxqt_de.sh -O /root/lxqt_de.sh
+    wget --tries=20 $dlink/LXQT/lxqt_de.sh -O /root/lxqt_de.sh
     bash ~/lxqt_de.sh
 else
     bash ~/lxqt_de.sh

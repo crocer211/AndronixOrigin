@@ -1,29 +1,29 @@
 #!/bin/bash
 
 #Get the necessary components
-apt-mark hold udisks2
-[ ! -f /root/.parrot ] && apt-get update || echo "Parrot detected, not updating apt cache since that will break the whole distro"
-apt-get install keyboard-configuration -y
-apt-get install sudo wget -y
-apt-get install xfce4 xfce4-terminal tigervnc-standalone-server -y
-apt-get install xfe -y
-apt-get clean
+apt update -y
+apt install udisks2 -y
+echo "" > /var/lib/dpkg/info/udisks2.postinst
+dpkg --configure -a
+apt install sudo wget nano inetutils-tools software-properties-common dbus-x11 -y
+echo "deb http://ppa.launchpad.net/niko2040/e19/ubuntu bionic main 
+deb-src http://ppa.launchpad.net/niko2040/e19/ubuntu bionic main " >> /etc/apt/resolv.conf
+apt update -y
+apt install e17 tigervnc-standalone-server -y
 
-#Setup the necessary files
-mkdir ~/.vnc
-wget https://raw.githubusercontent.com/Techriz/AndronixOrigin/master/APT/XFCE4/xstartup -P ~/.vnc/
+mkdir -p ~/.vnc
 wget https://raw.githubusercontent.com/Techriz/AndronixOrigin/master/APT/XFCE4/vncserver-start -P /usr/local/bin/
 wget https://raw.githubusercontent.com/Techriz/AndronixOrigin/master/APT/XFCE4/vncserver-stop -P /usr/local/bin/
-
-chmod +x ~/.vnc/xstartup
 chmod +x /usr/local/bin/vncserver-start
 chmod +x /usr/local/bin/vncserver-stop
 
-echo " "
+echo '#!/bin/bash
+[ -r $HOME/.Xresources ] && xrdb $HOME/.Xresources
+XAUTHORITY=$HOME/.Xauthority
+export XAUTHORITY                                                         
+dbus-launch --exit-with-session enlightenment_start &' > ~/.vnc/xstartup
 
-echo "Running browser patch"
-wget https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/Uninstall/ubchromiumfix.sh && chmod +x ubchromiumfix.sh
-./ubchromiumfix.sh && rm -rf ubchromiumfix.sh
+apt install epiphany-browser -y 
 
 echo "You can now start vncserver by running vncserver-start"
 echo " "
@@ -48,5 +48,3 @@ echo " "
 
 echo "export DISPLAY=":1"" >> /etc/profile
 source /etc/profile
-
-vncserver-start

@@ -7,8 +7,9 @@ echo " "
 echo " "
 pacman -Suuyy --noconfirm
 pacman -S lxqt xscreensaver sudo --noconfirm 
-pacman -S tigervnc --noconfirm
+pacman -S tigervnc wget --noconfirm
 pacman -S xorg --noconfirm
+pacman -S wget tar sed --noconfirm
 
 wget https://raw.githubusercontent.com/Techriz/AndronixOrigin/master/Pacman/Manjaro/LXQT/xstartup   -P ~/.vnc/
 wget https://raw.githubusercontent.com/Techriz/AndronixOrigin/master/Pacman/vncserver-start -P /usr/local/bin/
@@ -41,4 +42,4 @@ echo " "
 
 echo "export DISPLAY=":1"" >> /etc/profile
 source /etc/profile
-vncserver-start
+wget https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/Pacman/tigervnc-fix.sh -O ~/tigervnc-fix.sh && bash ~/tigervnc-fix.sh

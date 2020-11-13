@@ -1,34 +1,42 @@
 #!/data/data/com.termux/files/usr/bin/bash
 pkg install wget -y 
-folder=arch-fs
-dlink="https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/Pacman/Manjaro"
+folder=ubuntu-fs
+dlink="https://raw.githubusercontent.com/AndronixApp/AndronixOrigin/master/APT"
 if [ -d "$folder" ]; then
 	first=1
 	echo "skipping downloading"
 fi
-tarball="arch-rootfs.tar.gz"
+tarball="ubuntu-rootfs.tar.xz"
 if [ "$first" != 1 ];then
 	if [ ! -f $tarball ]; then
 		echo "Download Rootfs, this may take a while base on your internet speed."
 		case `dpkg --print-architecture` in
 		aarch64)
-			archurl="aarch64" ;;
+			archurl="arm64" ;;
 		arm)
-			archurl="armv7" ;;
+			archurl="armhf" ;;
+		amd64)
+			archurl="amd64" ;;
+		x86_64)
+			archurl="amd64" ;;	
+		i*86)
+			archurl="i386" ;;
+		x86)
+			archurl="i386" ;;
 		*)
 			echo "unknown architecture"; exit 1 ;;
 		esac
-		wget "http://os.archlinuxarm.org/os/ArchLinuxARM-${archurl}-latest.tar.gz" -O $tarball
+		wget "https://github.com/Techriz/AndronixOrigin/blob/master/Rootfs/Ubuntu/${archurl}/ubuntu-rootfs-${archurl}.tar.xz?raw=true" -O $tarball
 	fi
 	cur=`pwd`
 	mkdir -p "$folder"
 	cd "$folder"
 	echo "Decompressing Rootfs, please be patient."
-	proot --link2symlink tar -xf ${cur}/${tarball}||:
+	proot --link2symlink tar -xJf ${cur}/${tarball}||:
 	cd "$cur"
 fi
-mkdir -p arch-binds
-bin=start-arch.sh
+mkdir -p ubuntu-binds
+bin=start-ubuntu.sh
 echo "writing launch script"
 cat > $bin <<- EOM
 #!/bin/bash
@@ -39,14 +47,14 @@ command="proot"
 command+=" --link2symlink"
 command+=" -0"
 command+=" -r $folder"
-if [ -n "\$(ls -A arch-binds)" ]; then
-    for f in arch-binds/* ;do
+if [ -n "\$(ls -A ubuntu-binds)" ]; then
+    for f in ubuntu-binds/* ;do
       . \$f
     done
 fi
 command+=" -b /dev"
 command+=" -b /proc"
-command+=" -b arch-fs/root:/dev/shm"
+command+=" -b ubuntu-fs/root:/dev/shm"
 ## uncomment the following line to have access to the home directory of termux
 #command+=" -b /data/data/com.termux/files/home:/root"
 ## uncomment the following line to mount /sdcard directly to / 
@@ -72,37 +80,35 @@ echo "making $bin executable"
 chmod +x $bin
 echo "removing image for some space"
 rm $tarball
-echo "You can now launch Arch Linux with the ./${bin} script"
-echo "Preparing additional component for the first time, please wait..."
-wget "https://raw.githubusercontent.com/Techriz/AndronixOrigin/master/Installer/Arch/armhf/resolv.conf" -P arch-fs/root
-wget "https://raw.githubusercontent.com/Techriz/AndronixOrigin/master/Installer/Arch/armhf/additional.sh" -P arch-fs/root
-rm -rf arch-fs/root/.bash_profile
 
+#DE installation addition
 
-wget $dlink/lxde_de.sh -O $folder/root/lxde_de.sh
-echo " #!/bin/bash
-bash ~/additional.sh
-pacman -Syyuu --noconfirm && pacman -S wget sudo --noconfirm 
-mkdir -p ~/.vnc
+wget --tries=20 $dlink/EL/el.sh -O $folder/root/el.sh
 clear
-if [ ! -f /root/xfce4_de.sh ]; then
-    wget --tries=20 $dlink/lxde_de.sh -O /root/lxde_de.sh
-    bash ~/lxde_de.sh
+echo "Setting up the installation of Enlightenment VNC"
+
+echo "APT::Acquire::Retries \"3\";" > $folder/etc/apt/apt.conf.d/80-retries #Setting APT retry count
+echo "#!/bin/bash
+apt update -y && apt install wget sudo -y
+clear
+if [ ! -f /root/el.sh ]; then
+    wget --tries=20 $dlink/EL/el.sh -O /root/el.sh
+    bash ~/el.sh
 else
-    bash ~/lxde_de.sh
+    bash ~/el.sh
 fi
 clear
 if [ ! -f /usr/local/bin/vncserver-start ]; then
-    wget --tries=20  $dlink/XFCE4/vncserver-start -O /usr/local/bin/vncserver-start 
-    wget --tries=20 $dlink/XFCE4/vncserver-stop -O /usr/local/bin/vncserver-stop
+    wget --tries=20  $dlink/LXDE/vncserver-start -O /usr/local/bin/vncserver-start
+    wget --tries=20 $dlink/LXDE/vncserver-stop -O /usr/local/bin/vncserver-stop
     chmod +x /usr/local/bin/vncserver-stop
     chmod +x /usr/local/bin/vncserver-start
 fi
 if [ ! -f /usr/bin/vncserver ]; then
-    pacman -S tigervnc --noconfirm > /dev/null
+    apt install tigervnc-standalone-server -y
 fi
 clear
-echo 'Welcome to Arch Linux | LXDE'
+echo ' Welcome to Andronix | Ubutnu '
 rm -rf ~/.bash_profile" > $folder/root/.bash_profile 
 
 bash $bin
